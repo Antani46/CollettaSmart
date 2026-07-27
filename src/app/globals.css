@@ -210,3 +210,15 @@ input[type="number"]::-webkit-outer-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
+
+/* ===== Nasconde l'icona/badge Next.js in basso a sinistra ===== */
+[data-nextjs-toast],
+[data-next-badge],
+#next-logo,
+nextjs-portal,
+div[class*="next-js-dev-tools-button"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
