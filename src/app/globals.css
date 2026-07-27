@@ -1,26 +1,156 @@
+/* Google Fonts — deve precedere @import "tailwindcss" */
+@import url('https://fonts.googleapis.com/css2?family=MedievalSharp&family=Inter:wght@300;400;500;600;700&display=swap');
+
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ============================================
+ * L'obolo dell'Arrosticino — Design System
+ * Tema celtico/bosco: verde scuro, marrone, dorato
+ * ============================================ */
 
+/* ===== Tailwind v4 Theme Tokens ===== */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Colori celtici */
+  --color-celtic-dark: #0a0f0a;
+  --color-celtic-forest: #1a2e1a;
+  --color-celtic-moss: #2d4a2d;
+  --color-celtic-gold: #c9a84c;
+  --color-celtic-gold-light: #e8d48b;
+  --color-celtic-brown: #5c3d2e;
+  --color-celtic-brown-light: #8b6b4a;
+  --color-celtic-parchment: #d4c5a0;
+  --color-celtic-green: #4a7c4a;
+  --color-celtic-red: #8b3a3a;
+
+  /* Font families */
+  --font-medieval: 'MedievalSharp', cursive;
+  --font-body: 'Inter', system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ===== Reset & Base ===== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #0a0f0a;
+  color: #d4c5a0;
+  font-family: 'Inter', system-ui, sans-serif;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== Scrollbar Custom (webkit) ===== */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0f0a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2d4a2d;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4a7c4a;
+}
+
+/* ===== Utility Classes ===== */
+.font-medieval {
+  font-family: 'MedievalSharp', cursive;
+}
+
+/* ===== Background pattern celtico sottile ===== */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: 
+    radial-gradient(circle at 20% 50%, rgba(45, 74, 45, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(92, 61, 46, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 50% 80%, rgba(45, 74, 45, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Assicura che il contenuto sia sopra al pattern */
+#__next, main, body > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== Animazioni ===== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(201, 168, 76, 0.3); }
+  50% { box-shadow: 0 0 16px rgba(201, 168, 76, 0.5); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out both;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out both;
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+/* Stagger animation per le card nella lista */
+.stagger-item {
+  animation: fadeIn 0.4s ease-out both;
+}
+
+.stagger-item:nth-child(1) { animation-delay: 0.05s; }
+.stagger-item:nth-child(2) { animation-delay: 0.1s; }
+.stagger-item:nth-child(3) { animation-delay: 0.15s; }
+.stagger-item:nth-child(4) { animation-delay: 0.2s; }
+.stagger-item:nth-child(5) { animation-delay: 0.25s; }
+.stagger-item:nth-child(6) { animation-delay: 0.3s; }
+.stagger-item:nth-child(7) { animation-delay: 0.35s; }
+.stagger-item:nth-child(8) { animation-delay: 0.4s; }
+.stagger-item:nth-child(9) { animation-delay: 0.45s; }
+.stagger-item:nth-child(10) { animation-delay: 0.5s; }
+
+/* ===== Input/Checkbox styling per coerenza ===== */
+input[type="checkbox"] {
+  accent-color: #c9a84c;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
 }
