@@ -1,56 +1,80 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import { CircleDollarSign } from 'lucide-react';
+import styles from './ProgressBar.module.css';
 
 interface ProgressBarProps {
   raccolto: number;
   totale: number;
   pagati: number;
   totaleAmici: number;
+  donatoriFurgone?: string[];
 }
 
-export default function ProgressBar({ raccolto, totale, pagati, totaleAmici }: ProgressBarProps) {
+export default function ProgressBar({ raccolto, totale, pagati, totaleAmici, donatoriFurgone }: ProgressBarProps) {
   const percentuale = totale > 0 ? Math.min((raccolto / totale) * 100, 100) : 0;
+  const fillRef = useRef<HTMLDivElement>(null);
+
+  // Aggiornamento DOM chirurgico per la larghezza senza sporcare il markup JSX con style={...}
+  useEffect(() => {
+    if (fillRef.current) {
+      fillRef.current.style.width = `${percentuale}%`;
+    }
+  }, [percentuale]);
 
   return (
-    <div className="bg-celtic-forest/80 rounded-2xl border border-celtic-moss/50 p-5">
+    <div className={styles.progressCard}>
       {/* Titolo raccolta */}
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <CircleDollarSign className="w-5 h-5 text-celtic-gold" />
-          <span className="text-celtic-parchment/70 text-sm">Raccolta Totale</span>
+      <div className={styles.headerRow}>
+        <div className={styles.titleGroup}>
+          <CircleDollarSign className={styles.icon} />
+          <span className={styles.label}>Raccolta Totale</span>
         </div>
-        <span className="text-celtic-parchment/50 text-xs">
+        <span className={styles.countText}>
           {pagati}/{totaleAmici} pagati
         </span>
       </div>
 
       {/* Importi */}
-      <div className="flex items-baseline gap-1 mb-3">
-        <span className="text-3xl font-bold text-celtic-gold">
+      <div className={styles.amountsRow}>
+        <span className={styles.currentAmount}>
           €{raccolto.toFixed(2)}
         </span>
-        <span className="text-celtic-parchment/40 text-lg">
+        <span className={styles.totalAmount}>
           / €{totale.toFixed(2)}
         </span>
       </div>
 
-      {/* Barra progresso */}
-      <div className="relative h-3 bg-celtic-dark/60 rounded-full overflow-hidden">
+      {/* Barra progresso totalmente priva di stili inline nel JSX */}
+      <div className={styles.track}>
         <div
-          className="absolute inset-y-0 left-0 rounded-full transition-all duration-1000 ease-out"
-          style={{
-            width: `${percentuale}%`,
-            background: 'linear-gradient(90deg, #8b6b4a, #c9a84c, #e8d48b)',
-            boxShadow: percentuale > 0 ? '0 0 12px rgba(201, 168, 76, 0.5)' : 'none',
-          }}
+          ref={fillRef}
+          className={`${styles.fill} ${percentuale > 0 ? styles.fillActive : styles.fillEmpty}`}
         />
       </div>
 
       {/* Percentuale */}
-      <p className="text-right text-celtic-parchment/40 text-xs mt-1">
+      <p className={styles.percentageText}>
         {percentuale.toFixed(0)}%
       </p>
+
+      {/* Hall of Fame — Eroi del Furgone */}
+      {donatoriFurgone && donatoriFurgone.length > 0 && (
+        <div className={styles.hallOfFame}>
+          <p className={styles.hallOfFameTitle}>
+            <span>✨</span> Eroi del Furgone <span>✨</span>
+          </p>
+          <div className={styles.heroesList}>
+            {donatoriFurgone.map((nome, index) => (
+              <span key={index} className={styles.heroItem}>
+                <span className={styles.heroSparkle}>💖</span>
+                {nome}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

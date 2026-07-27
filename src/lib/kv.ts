@@ -129,3 +129,12 @@ export async function togglePagato(id: string): Promise<void> {
   );
   await setAmici(aggiornati);
 }
+
+/** Imposta la spunta di Aiuto Furgone per un compagno */
+export async function impostaFurgone(id: string, attivo: boolean): Promise<void> {
+  const amici = await getAmici();
+  const aggiornati = amici.map((a) =>
+    a.id === id ? { ...a, aiutoFurgone: attivo } : a
+  );
+  await setAmici(aggiornati);
+}

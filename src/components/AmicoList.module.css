@@ -1,0 +1,34 @@
+/* ====================================================
+ * AmicoList — Stili semantici per la lista compagni
+ * ==================================================== */
+
+.listContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .listContainer {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+}
+
+.staggerItem {
+  animation: fadeIn 0.4s ease-out both;
+}
+
+.staggerItem:nth-child(1) { animation-delay: 0.05s; }
+.staggerItem:nth-child(2) { animation-delay: 0.1s; }
+.staggerItem:nth-child(3) { animation-delay: 0.15s; }
+.staggerItem:nth-child(4) { animation-delay: 0.2s; }
+.staggerItem:nth-child(5) { animation-delay: 0.25s; }
+.staggerItem:nth-child(6) { animation-delay: 0.3s; }
+.staggerItem:nth-child(7) { animation-delay: 0.35s; }
+.staggerItem:nth-child(8) { animation-delay: 0.4s; }
+.staggerItem:nth-child(9) { animation-delay: 0.45s; }
+.staggerItem:nth-child(10) { animation-delay: 0.5s; }

@@ -1,0 +1,164 @@
+/* ====================================================
+ * ProgressBar — Stili semantici e animazioni barra
+ * ==================================================== */
+
+.progressCard {
+  background-color: rgba(26, 46, 26, 0.8); /* celtic-forest/80 */
+  border-radius: 1rem;
+  border: 1px solid rgba(45, 74, 45, 0.5); /* celtic-moss/50 */
+  padding: 1.25rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.titleGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--color-celtic-gold, #c9a84c);
+}
+
+.label {
+  color: rgba(212, 197, 160, 0.7); /* celtic-parchment/70 */
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.countText {
+  color: rgba(212, 197, 160, 0.5);
+  font-size: 0.75rem;
+}
+
+.amountsRow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.currentAmount {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--color-celtic-gold, #c9a84c);
+}
+
+.totalAmount {
+  color: rgba(212, 197, 160, 0.4);
+  font-size: 1.125rem;
+}
+
+/* Track e Fill della progress bar */
+.track {
+  position: relative;
+  height: 0.75rem;
+  background-color: rgba(10, 15, 10, 0.6); /* celtic-dark/60 */
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 9999px;
+  transition: width 1s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+  background: linear-gradient(90deg, #8b6b4a, #c9a84c, #e8d48b);
+  width: 0%; /* Inizializzato a 0, aggiornato via DOM ref senza stili inline JSX */
+}
+
+.fillActive {
+  box-shadow: 0 0 12px rgba(201, 168, 76, 0.5);
+}
+
+.fillEmpty {
+  box-shadow: none;
+  background: transparent;
+}
+
+.percentageText {
+  text-align: right;
+  color: rgba(212, 197, 160, 0.4);
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+/* ====================================================
+ * Hall of Fame — Eroi del Furgone
+ * ==================================================== */
+.hallOfFame {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px dashed rgba(201, 168, 76, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.hallOfFameTitle {
+  color: #f6d365;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-shadow: 0 0 10px rgba(246, 211, 101, 0.5);
+}
+
+.heroesList {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.heroItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 800;
+  color: #ffdf73;
+  font-size: 0.95rem;
+  text-shadow: 0 0 14px rgba(255, 223, 115, 0.7), 0 0 4px rgba(255, 180, 40, 0.5);
+  animation: gentlePulse 2.5s ease-in-out infinite;
+}
+
+.heroSparkle {
+  display: inline-block;
+  animation: floatSparkle 2s ease-in-out infinite;
+}
+
+@keyframes gentlePulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes floatSparkle {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-3px) rotate(12deg);
+  }
+}

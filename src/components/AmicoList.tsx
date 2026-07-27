@@ -4,6 +4,7 @@ import { useState } from 'react';
 import AmicoCard from './AmicoCard';
 import AmicoDrawer from './AmicoDrawer';
 import { Amico, QuoteCalcolate } from '@/lib/types';
+import styles from './AmicoList.module.css';
 
 interface AmicoConQuote extends Amico {
   quote: QuoteCalcolate;
@@ -18,10 +19,10 @@ export default function AmicoList({ amiciConQuote }: AmicoListProps) {
 
   return (
     <>
-      {/* Lista card */}
-      <div className="space-y-2">
-        {amiciConQuote.map((amico, index) => (
-          <div key={amico.id} className="stagger-item">
+      {/* Lista card semantica e organizzata */}
+      <div className={styles.listContainer}>
+        {amiciConQuote.map((amico) => (
+          <div key={amico.id} className={styles.staggerItem}>
             <AmicoCard
               nome={amico.nome}
               pagato={amico.pagato}
@@ -35,12 +36,14 @@ export default function AmicoList({ amiciConQuote }: AmicoListProps) {
       {/* Drawer dettaglio */}
       {selectedAmico && (
         <AmicoDrawer
+          id={selectedAmico.id}
           nome={selectedAmico.nome}
           quote={selectedAmico.quote}
           pagato={selectedAmico.pagato}
           partecipaC1={selectedAmico.partecipaC1}
           partecipaC2={selectedAmico.partecipaC2}
           mangiaFegato={selectedAmico.mangiaFegato}
+          aiutoFurgoneIniziale={selectedAmico.aiutoFurgone || false}
           isOpen={!!selectedAmico}
           onClose={() => setSelectedAmico(null)}
         />

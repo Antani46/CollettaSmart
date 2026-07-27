@@ -44,13 +44,17 @@ export function calcolaQuoteAmico(
     ? costi.costoC2 / partecipantiC2
     : 0;
 
+  // Calcola la quota Furgone (costo fisso di 10.00€ se aiutoFurgone è attivo)
+  const quotaFurgone = amico.aiutoFurgone ? 10 : 0;
+
   // Il totale è la somma di tutte le quote applicabili
-  const totaleAmico = quotaNormali + quotaFegato + quotaC2;
+  const totaleAmico = quotaNormali + quotaFegato + quotaC2 + quotaFurgone;
 
   return {
     quotaNormali: arrotonda(quotaNormali),
     quotaFegato: arrotonda(quotaFegato),
     quotaC2: arrotonda(quotaC2),
+    quotaFurgone: arrotonda(quotaFurgone),
     totaleAmico: arrotonda(totaleAmico),
   };
 }

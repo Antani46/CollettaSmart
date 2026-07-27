@@ -1,10 +1,6 @@
 // ============================================
 // L'obolo dell'Arrosticino - Admin Page (Server Component)
 // ============================================
-// File: src/app/admin/page.tsx
-// Riscritto con try/catch anti-crash e fallback
-// sicuri per DB vuoto o irraggiungibile.
-// ============================================
 
 import { isAdmin } from '@/lib/auth';
 import { getDatiColletta } from '@/lib/kv';
@@ -49,11 +45,11 @@ export default async function AdminPage() {
     erroreDB = true;
   }
 
-  // Interfaccia di emergenza per il Custode in caso di errore DB
+  // Interfaccia di emergenza per il Custode (utilizzando pattern visivo DRY unificato con la Home)
   if (erroreDB) {
     return (
-      <div className="min-h-dvh bg-celtic-dark flex flex-col items-center justify-center p-6 text-center">
-        <div className="bg-celtic-forest/80 border-2 border-celtic-red/50 rounded-2xl p-6 max-w-md w-full shadow-2xl animate-fade-in">
+      <div className="page-container justify-center p-6 text-center">
+        <div className="card-error animate-fade-in">
           <AlertTriangle className="w-12 h-12 text-celtic-red mx-auto mb-4 animate-bounce" />
           <h1 className="font-medieval text-2xl text-celtic-gold mb-2">
             Database Non Raggiungibile

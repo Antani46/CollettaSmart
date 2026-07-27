@@ -12,6 +12,8 @@ export interface Amico {
   partecipaC2: boolean;
   /** Mangia arrosticini di fegato (rilevante solo per C1) */
   mangiaFegato: boolean;
+  /** Contributo facoltativo Aiuto Furgone (€10 fisso) */
+  aiutoFurgone?: boolean;
   /** Ha già pagato il suo totale */
   pagato: boolean;
 }
@@ -34,6 +36,8 @@ export interface QuoteCalcolate {
   quotaFegato: number;
   /** Quota Colletta 2 */
   quotaC2: number;
+  /** Quota Aiuto Furgone (€10.00 se attivo, 0 altrimenti) */
+  quotaFurgone: number;
   /** Totale da pagare (somma delle quote applicabili) */
   totaleAmico: number;
 }

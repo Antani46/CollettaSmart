@@ -32,7 +32,7 @@ export default function AdminDashboard({ costi, amici }: AdminDashboardProps) {
   const [isPending, startTransition] = useTransition();
 
   return (
-    <div className="min-h-screen bg-celtic-dark">
+    <div className="page-container items-stretch">
       {/* Header */}
       <header className="sticky top-0 z-10 bg-celtic-dark/95 backdrop-blur-sm border-b border-celtic-moss/50 px-4 sm:px-6 py-3">
         <div className="flex items-center justify-between max-w-md mx-auto">
@@ -47,7 +47,7 @@ export default function AdminDashboard({ costi, amici }: AdminDashboardProps) {
         </div>
       </header>
 
-      <main className="w-full max-w-md mx-auto px-4 sm:px-6 py-6 space-y-6">
+      <main className="main-wrapper">
         {/* ===== SEZIONE COSTI ===== */}
         <section className="bg-celtic-forest/80 rounded-2xl border border-celtic-moss/50 p-5">
           <div className="flex items-center gap-2 mb-4">
@@ -100,7 +100,7 @@ export default function AdminDashboard({ costi, amici }: AdminDashboardProps) {
             <div>
               <label className="flex items-center gap-2 text-sm text-celtic-parchment/70 mb-1">
                 <ShoppingBag className="w-4 h-4 text-celtic-green" />
-                Colletta 2 — Generale
+                Colletta 2 — Venerdi
               </label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-celtic-gold/50 font-bold">€</span>
@@ -237,7 +237,7 @@ export default function AdminDashboard({ costi, amici }: AdminDashboardProps) {
                         {amico.partecipaC1 && <span>🍖C1</span>}
                         {amico.partecipaC2 && <span>🛍️C2</span>}
                         {amico.mangiaFegato && <span>🫀Feg</span>}
-                        <span className="text-celtic-gold">€{quote.totaleAmico.toFixed(2)}</span>
+                        <span className="text-celtic-gold font-bold">€{quote.totaleAmico.toFixed(2)}</span>
                       </div>
                     </div>
 

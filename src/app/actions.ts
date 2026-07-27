@@ -1,13 +1,5 @@
 'use server';
 
-// ============================================
-// L'obolo dell'Arrosticino - Server Actions
-// ============================================
-// Tutte le mutazioni del database passano da qui.
-// Ogni action che modifica dati verifica prima
-// l'autenticazione admin.
-// ============================================
-
 import { revalidatePath } from 'next/cache';
 import {
   verificaPassword,
@@ -21,6 +13,7 @@ import {
   aggiungiAmico as kvAggiungiAmico,
   rimuoviAmico as kvRimuoviAmico,
   togglePagato as kvTogglePagato,
+  impostaFurgone as kvImpostaFurgone,
 } from '@/lib/kv';
 import { Amico, CostiCollette } from '@/lib/types';
 
@@ -127,6 +120,12 @@ export async function rimuoviAmicoAction(id: string): Promise<void> {
 export async function togglePagatoAction(id: string): Promise<void> {
   await requireAdmin();
   await kvTogglePagato(id);
+  revalidatePath('/');
+  revalidatePath('/admin');
+}
+
+export async function impostaFurgoneAction(id: string, attivo: boolean): Promise<void> {
+  await kvImpostaFurgone(id, attivo);
   revalidatePath('/');
   revalidatePath('/admin');
 }

@@ -85,8 +85,8 @@ body::before {
   z-index: 0;
 }
 
-/* Assicura che il contenuto sia sopra al pattern */
-#__next, main, body > * {
+/* Assicura che il contenuto principale sia sopra al pattern senza interferire con i Portals/Modali */
+#__next, main {
   position: relative;
   z-index: 1;
 }
@@ -139,6 +139,62 @@ body::before {
 .stagger-item:nth-child(8) { animation-delay: 0.4s; }
 .stagger-item:nth-child(9) { animation-delay: 0.45s; }
 .stagger-item:nth-child(10) { animation-delay: 0.5s; }
+
+/* ===== Classi di ritardo animazione unificate (DRY) per eliminare style inline ===== */
+.delay-100 { animation-delay: 0.1s; }
+.delay-150 { animation-delay: 0.15s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-250 { animation-delay: 0.25s; }
+.delay-350 { animation-delay: 0.35s; }
+
+/* ===== Pattern Visivi e Layout Generali Unificati (DRY) ===== */
+.page-container {
+  min-height: 100dvh;
+  background-color: var(--color-celtic-dark, #0a0f0a);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.main-wrapper {
+  width: 100%;
+  max-width: 28rem; /* max-w-md per coerenza mobile/desktop */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .main-wrapper {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+.card-empty {
+  width: 100%;
+  background-color: rgba(26, 46, 26, 0.4);
+  border-radius: 1rem;
+  border: 1px solid rgba(45, 74, 45, 0.3);
+  padding: 2rem;
+  text-align: center;
+}
+
+.card-error {
+  background-color: rgba(26, 46, 26, 0.8);
+  border: 2px solid rgba(139, 58, 58, 0.5);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  max-width: 28rem;
+  width: 100%;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
 
 /* ===== Input/Checkbox styling per coerenza ===== */
 input[type="checkbox"] {

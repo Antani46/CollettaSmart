@@ -1,10 +1,5 @@
 // ============================================
-// L'obolo dell'Arrosticino - Homepage (Server Component)
-// ============================================
-// File: src/app/page.tsx
-// Riscritto con layout mobile-first ottimizzato,
-// contenitore globale max-w-md centrato, padding e
-// allineamento perfetto tra Header e Card.
+// Home Page — L'obolo dell'Arrosticino
 // ============================================
 
 import { getDatiColletta } from '@/lib/kv';
@@ -44,11 +39,11 @@ export default async function HomePage() {
     erroreDB = true;
   }
 
-  // Interfaccia di emergenza in caso di errore DB irrecuperabile
+  // Interfaccia di emergenza in caso di errore DB irrecuperabile (usando pattern visivi DRY)
   if (erroreDB) {
     return (
-      <div className="min-h-dvh bg-celtic-dark flex flex-col items-center justify-center p-6 text-center">
-        <div className="bg-celtic-forest/80 border-2 border-celtic-red/50 rounded-2xl p-6 max-w-md w-full shadow-2xl animate-fade-in">
+      <div className="page-container justify-center p-6 text-center">
+        <div className="card-error animate-fade-in">
           <AlertTriangle className="w-12 h-12 text-celtic-red mx-auto mb-4 animate-bounce" />
           <h1 className="font-medieval text-2xl text-celtic-gold mb-2">
             Impossibile caricare i dati
@@ -70,24 +65,25 @@ export default async function HomePage() {
 
   // Calcoli di riepilogo protetti e pre-elaborazione delle quote
   const riepilogo = calcolaRiepilogo(amici, costi);
+  const donatoriFurgone = amici.filter(u => u.pagato === true && u.aiutoFurgone === true);
   const amiciConQuote = amici.map((amico) => ({
     ...amico,
     quote: calcolaQuoteAmico(amico, costi, amici),
   }));
 
   return (
-    <div className="min-h-dvh bg-celtic-dark flex flex-col items-center">
-      {/* Contenitore Globale (Wrapper) - max-w-md mx-auto w-full px-4 sm:px-6 py-6 space-y-6 */}
-      <div className="w-full max-w-md mx-auto px-4 sm:px-6 py-6 space-y-6">
+    <div className="page-container">
+      {/* Contenitore Globale (Wrapper DRY) */}
+      <div className="main-wrapper">
         
         {/* ===== HEADER ===== */}
-        <header className="relative text-center pt-2 pb-2">
+        <header className="pt-6 pb-4 text-center relative">
           {/* Decorazione celtica */}
           <div className="flex justify-center mb-3">
             <div className="relative">
               <div className="absolute inset-0 bg-celtic-gold/20 rounded-full blur-xl" />
-              <div className="relative inline-flex items-center justify-center w-16 h-16 rounded-full bg-celtic-forest border-2 border-celtic-gold/30 shadow-lg">
-                <TreePine className="w-8 h-8 text-celtic-gold" />
+              <div className="relative inline-flex items-center justify-center w-14 h-14 rounded-full bg-celtic-forest border-2 border-celtic-gold/30 shadow-lg">
+                <TreePine className="w-7 h-7 text-celtic-gold" />
               </div>
             </div>
           </div>
@@ -95,12 +91,12 @@ export default async function HomePage() {
           <h1 className="font-medieval text-3xl text-celtic-gold mb-1 animate-fade-in tracking-wide">
             Missione Arrosticini
           </h1>
-          <p className="text-celtic-parchment/60 text-sm animate-fade-in" style={{ animationDelay: '0.1s' }}>
-            Festival Celtico — Collette della Compagnia
+          <p className="text-celtic-parchment/60 text-sm animate-fade-in delay-100">
+            Montelago — Collette dei Sbandieratori
           </p>
 
           {/* Separatore celtico */}
-          <div className="flex items-center justify-center gap-3 mt-4 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <div className="flex items-center justify-center gap-3 mt-4 animate-fade-in delay-200">
             <div className="h-px w-12 bg-gradient-to-r from-transparent to-celtic-gold/30" />
             <span className="text-celtic-gold/40 text-xs">✦</span>
             <div className="h-px w-12 bg-gradient-to-l from-transparent to-celtic-gold/30" />
@@ -109,18 +105,19 @@ export default async function HomePage() {
 
         {/* ===== CONTENUTO PRINCIPALE ===== */}
         <main className="w-full space-y-6">
-          {/* Progress Bar */}
-          <div className="w-full animate-fade-in" style={{ animationDelay: '0.15s' }}>
+          {/* Progress Bar con Hall of Fame */}
+          <div className="w-full animate-fade-in delay-150">
             <ProgressBar
               raccolto={riepilogo.raccolto}
               totale={riepilogo.totale}
               pagati={riepilogo.pagati}
               totaleAmici={riepilogo.totaleAmici}
+              donatoriFurgone={donatoriFurgone.map(u => u.nome)}
             />
           </div>
 
           {/* Lista Amici */}
-          <div className="w-full animate-fade-in" style={{ animationDelay: '0.25s' }}>
+          <div className="w-full animate-fade-in delay-250">
             <div className="flex items-center justify-between mb-3 px-1">
               <h2 className="font-medieval text-lg text-celtic-gold">
                 La Compagnia
@@ -131,7 +128,7 @@ export default async function HomePage() {
             </div>
 
             {amici.length === 0 ? (
-              <div className="w-full bg-celtic-forest/40 rounded-2xl border border-celtic-moss/30 p-8 text-center">
+              <div className="card-empty">
                 <TreePine className="w-10 h-10 text-celtic-moss mx-auto mb-3" />
                 <p className="text-celtic-parchment/60 text-sm font-medium">
                   Nessun compagno ancora.
@@ -146,7 +143,7 @@ export default async function HomePage() {
           </div>
 
           {/* Link Admin discreto */}
-          <div className="text-center pt-4 pb-4 animate-fade-in" style={{ animationDelay: '0.35s' }}>
+          <div className="text-center pt-4 pb-4 animate-fade-in delay-350">
             <Link
               href="/admin"
               className="inline-flex items-center gap-1.5 text-celtic-parchment/30 hover:text-celtic-parchment/60 text-xs transition-colors"

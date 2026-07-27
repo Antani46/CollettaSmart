@@ -8,7 +8,7 @@ export default function AdminLogin() {
   const [state, formAction, isPending] = useActionState(loginAction, null);
 
   return (
-    <div className="min-h-screen bg-celtic-dark flex items-center justify-center p-4">
+    <div className="page-container justify-center p-4">
       <div className="w-full max-w-sm">
         {/* Header */}
         <div className="text-center mb-8">
@@ -19,7 +19,7 @@ export default function AdminLogin() {
             Accesso Custode
           </h1>
           <p className="text-celtic-parchment/60 text-sm">
-            Solo i custodi del festival possono entrare.
+            Solo i custodi del festival
           </p>
         </div>
 
@@ -30,7 +30,6 @@ export default function AdminLogin() {
             <input
               type="password"
               name="password"
-              placeholder="Parola d'ordine..."
               required
               className="w-full pl-11 pr-4 py-4 bg-celtic-forest border border-celtic-moss rounded-xl text-celtic-parchment placeholder:text-celtic-parchment/30 focus:outline-none focus:border-celtic-gold/50 focus:ring-1 focus:ring-celtic-gold/30 transition-all text-lg"
             />
@@ -57,6 +56,7 @@ export default function AdminLogin() {
             )}
           </button>
         </form>
+
       </div>
     </div>
   );
