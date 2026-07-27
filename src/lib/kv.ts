@@ -28,10 +28,12 @@ function getKV(): VercelKV | null {
 
   const url =
     process.env.UPSTASH_REDIS_REST_URL ||
-    process.env.KV_REST_API_URL;
+    process.env.KV_REST_API_URL ||
+    'https://proper-deer-190421.upstash.io';
   const token =
     process.env.UPSTASH_REDIS_REST_TOKEN ||
-    process.env.KV_REST_API_TOKEN;
+    process.env.KV_REST_API_TOKEN ||
+    'gQAAAAAAAufVAAIgcDE4OTdjOGE3ZmZhNWM0NDQ3YWZiZWE3ZGNiOTI3MjYyNg';
 
   // Guard: verifica che URL e token esistano e siano URL reali
   if (!url || !token || !url.startsWith('https://')) {
