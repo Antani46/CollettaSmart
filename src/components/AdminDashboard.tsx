@@ -34,8 +34,8 @@ export default function AdminDashboard({ costi, amici }: AdminDashboardProps) {
   return (
     <div className="min-h-screen bg-celtic-dark">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-celtic-dark/95 backdrop-blur-sm border-b border-celtic-moss/50 px-4 py-3">
-        <div className="flex items-center justify-between max-w-lg mx-auto">
+      <header className="sticky top-0 z-10 bg-celtic-dark/95 backdrop-blur-sm border-b border-celtic-moss/50 px-4 sm:px-6 py-3">
+        <div className="flex items-center justify-between max-w-md mx-auto">
           <h1 className="font-medieval text-xl text-celtic-gold">⚔️ Pannello Custode</h1>
           <button
             onClick={() => startTransition(() => logoutAction())}
@@ -47,7 +47,7 @@ export default function AdminDashboard({ costi, amici }: AdminDashboardProps) {
         </div>
       </header>
 
-      <main className="max-w-lg mx-auto px-4 py-6 space-y-6">
+      <main className="w-full max-w-md mx-auto px-4 sm:px-6 py-6 space-y-6">
         {/* ===== SEZIONE COSTI ===== */}
         <section className="bg-celtic-forest/80 rounded-2xl border border-celtic-moss/50 p-5">
           <div className="flex items-center gap-2 mb-4">

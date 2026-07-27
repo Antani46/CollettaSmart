@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "L'obolo dell'Arrosticino | Festival Celtico",
+  title: "Missione Arrosticini | Festival Celtico",
   description:
     "Gestisci le collette del Festival Celtico. Dividi i costi degli arrosticini e paga con un click.",
   keywords: ["colletta", "festival celtico", "arrosticini", "pagamento"],
