@@ -1,61 +1,21 @@
 // ============================================
 // L'obolo dell'Arrosticino - Data Access Layer
 // ============================================
-// Connessione a Upstash Redis via @vercel/kv.
-// Il client viene creato SOLO se le variabili
-// d'ambiente contengono URL validi (https://).
-// Se il DB è vuoto o irraggiungibile, ritorna
-// dati di default senza mai crashare.
+// File: src/lib/kv.ts
+// Client ufficiale @upstash/redis con protezioni
+// anti-crash su database vuoto (null handling).
 // ============================================
 
-import { createClient, type VercelKV } from '@vercel/kv';
+import { Redis } from '@upstash/redis';
 import { Amico, CostiCollette, DatiColletta } from './types';
 
-// ---------- CLIENT REDIS (Lazy & Safe) ----------
+// Istanza esplicita di Upstash Redis
+export const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL || 'https://proper-deer-190421.upstash.io',
+  token: process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN || 'gQAAAAAAAufVAAIgcDE4OTdjOGE3ZmZhNWM0NDQ3YWZiZWE3ZGNiOTI3MjYyNg',
+});
 
-let _kv: VercelKV | null = null;
-let _kvInitialized = false;
-
-/**
- * Ritorna il client KV, creandolo al primo accesso.
- * NON chiama createClient se le env vars sono mancanti
- * o contengono placeholder, evitando il crash fatale
- * di Upstash "invalid URL" a livello di module evaluation.
- */
-function getKV(): VercelKV | null {
-  if (_kvInitialized) return _kv;
-  _kvInitialized = true;
-
-  const url =
-    process.env.UPSTASH_REDIS_REST_URL ||
-    process.env.KV_REST_API_URL ||
-    'https://proper-deer-190421.upstash.io';
-  const token =
-    process.env.UPSTASH_REDIS_REST_TOKEN ||
-    process.env.KV_REST_API_TOKEN ||
-    'gQAAAAAAAufVAAIgcDE4OTdjOGE3ZmZhNWM0NDQ3YWZiZWE3ZGNiOTI3MjYyNg';
-
-  // Guard: verifica che URL e token esistano e siano URL reali
-  if (!url || !token || !url.startsWith('https://')) {
-    console.warn(
-      '⚠️ [kv.ts] Redis non configurato.',
-      'URL trovato:', url ? `"${url.substring(0, 20)}..."` : 'undefined',
-      '| Token trovato:', token ? 'sì' : 'no'
-    );
-    return null;
-  }
-
-  try {
-    _kv = createClient({ url, token });
-    return _kv;
-  } catch (err) {
-    console.error('❌ [kv.ts] Errore creazione client Redis:', err);
-    return null;
-  }
-}
-
-// ---------- CHIAVI E DEFAULTS ----------
-
+// Chiavi Redis
 const KV_COSTI = 'colletta:costi';
 const KV_AMICI = 'colletta:amici';
 
@@ -65,81 +25,103 @@ const DEFAULT_COSTI: CostiCollette = {
   costoC2: 0,
 };
 
-// ---------- READ ----------
+/**
+ * Funzione di parsing sicura per dati provenienti da Redis.
+ * Gestisce sia oggetti JSON già analizzati che stringhe JSON,
+ * con fallback immediato se il valore è null o indefinito.
+ */
+function parseData<T>(raw: unknown, fallback: T): T {
+  if (raw === null || raw === undefined) {
+    return fallback;
+  }
+  if (typeof raw === 'string') {
+    try {
+      return JSON.parse(raw) as T;
+    } catch {
+      return fallback;
+    }
+  }
+  if (typeof raw === 'object') {
+    return raw as T;
+  }
+  return fallback;
+}
 
 /**
  * Recupera tutti i dati della colletta.
- * Se il DB è vuoto (primo avvio) o non raggiungibile,
- * ritorna SEMPRE dati di default validi — mai null, mai throw.
+ * Se Redis restituisce null (DB vuoto), applica i valori di default.
  */
 export async function getDatiColletta(): Promise<DatiColletta> {
-  const kv = getKV();
-  if (!kv) {
-    return { costi: DEFAULT_COSTI, amici: [] };
-  }
-
   try {
     const [costiRaw, amiciRaw] = await Promise.all([
-      kv.get(KV_COSTI),
-      kv.get(KV_AMICI),
+      redis.get(KV_COSTI),
+      redis.get(KV_AMICI),
     ]);
 
-    // Protezione null: se la chiave non esiste in Redis, kv.get ritorna null
-    const costi: CostiCollette =
-      costiRaw && typeof costiRaw === 'object'
-        ? { ...DEFAULT_COSTI, ...(costiRaw as CostiCollette) }
-        : DEFAULT_COSTI;
+    const costiParsed = parseData<CostiCollette>(costiRaw, DEFAULT_COSTI);
+    const costi: CostiCollette = {
+      costoNormali: Number(costiParsed?.costoNormali || 0),
+      costoFegato: Number(costiParsed?.costoFegato || 0),
+      costoC2: Number(costiParsed?.costoC2 || 0),
+    };
 
-    const amici: Amico[] = Array.isArray(amiciRaw)
-      ? (amiciRaw as Amico[])
-      : [];
+    const amiciParsed = parseData<Amico[]>(amiciRaw, []);
+    const amici: Amico[] = Array.isArray(amiciParsed) ? amiciParsed : [];
 
     return { costi, amici };
   } catch (err) {
-    console.error('❌ [kv.ts] Errore lettura Redis:', err);
+    console.error('❌ [kv.ts] Errore critico in getDatiColletta:', err);
     return { costi: DEFAULT_COSTI, amici: [] };
   }
 }
 
-// ---------- WRITE ----------
-
+/** Salva i costi su Upstash Redis */
 export async function setCosti(costi: CostiCollette): Promise<void> {
-  const kv = getKV();
-  if (!kv) throw new Error('Redis non configurato. Imposta le variabili UPSTASH_REDIS_REST_URL e UPSTASH_REDIS_REST_TOKEN.');
-  await kv.set(KV_COSTI, JSON.stringify(costi));
+  try {
+    await redis.set(KV_COSTI, costi);
+  } catch (err) {
+    console.error('❌ [kv.ts] Errore nel salvataggio costi:', err);
+    throw err;
+  }
 }
 
+/** Recupera la lista amici garantendo sempre un array [] */
 export async function getAmici(): Promise<Amico[]> {
-  const kv = getKV();
-  if (!kv) return [];
   try {
-    const raw = await kv.get(KV_AMICI);
-    return Array.isArray(raw) ? (raw as Amico[]) : [];
-  } catch {
+    const raw = await redis.get(KV_AMICI);
+    const parsed = parseData<Amico[]>(raw, []);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (err) {
+    console.error('❌ [kv.ts] Errore in getAmici:', err);
     return [];
   }
 }
 
+/** Salva la lista amici su Upstash Redis */
 export async function setAmici(amici: Amico[]): Promise<void> {
-  const kv = getKV();
-  if (!kv) throw new Error('Redis non configurato. Imposta le variabili UPSTASH_REDIS_REST_URL e UPSTASH_REDIS_REST_TOKEN.');
-  await kv.set(KV_AMICI, JSON.stringify(amici));
+  try {
+    await redis.set(KV_AMICI, amici);
+  } catch (err) {
+    console.error('❌ [kv.ts] Errore nel salvataggio amici:', err);
+    throw err;
+  }
 }
 
-// ---------- OPERAZIONI COMPOSITE ----------
-
+/** Aggiunge un compagno alla colletta */
 export async function aggiungiAmico(amico: Amico): Promise<void> {
   const amici = await getAmici();
   amici.push(amico);
   await setAmici(amici);
 }
 
+/** Rimuove un compagno tramite ID */
 export async function rimuoviAmico(id: string): Promise<void> {
   const amici = await getAmici();
   const filtrati = amici.filter((a) => a.id !== id);
   await setAmici(filtrati);
 }
 
+/** Modifica lo stato di pagamento (pagato/non pagato) */
 export async function togglePagato(id: string): Promise<void> {
   const amici = await getAmici();
   const aggiornati = amici.map((a) =>

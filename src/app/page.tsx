@@ -1,17 +1,74 @@
+// ============================================
+// L'obolo dell'Arrosticino - Homepage (Server Component)
+// ============================================
+// File: src/app/page.tsx
+// Riscritto con protezione anti-crash try/catch e
+// gestione di emergenza su null/indefinito.
+// ============================================
+
 import { getDatiColletta } from '@/lib/kv';
 import { calcolaQuoteAmico, calcolaRiepilogo } from '@/lib/calcoli';
 import ProgressBar from '@/components/ProgressBar';
 import AmicoList from '@/components/AmicoList';
-import { TreePine, Shield } from 'lucide-react';
+import { TreePine, Shield, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
+import { CostiCollette, Amico } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  const { costi, amici } = await getDatiColletta();
-  const riepilogo = calcolaRiepilogo(amici, costi);
+  let costi: CostiCollette = { costoNormali: 0, costoFegato: 0, costoC2: 0 };
+  let amici: Amico[] = [];
+  let erroreDB = false;
 
-  // Pre-calcola le quote per ogni amico (server-side)
+  // Blocco try/catch obbligatorio per proteggere il render Server-Side
+  try {
+    const dati = await getDatiColletta();
+
+    // Garanzia di gestione caso null / indefinito per i costi
+    if (dati?.costi) {
+      costi = {
+        costoNormali: Number(dati.costi.costoNormali || 0),
+        costoFegato: Number(dati.costi.costoFegato || 0),
+        costoC2: Number(dati.costi.costoC2 || 0),
+      };
+    }
+
+    // Garanzia di gestione caso null / indefinito per la lista amici
+    if (Array.isArray(dati?.amici)) {
+      amici = dati.amici;
+    }
+  } catch (error) {
+    console.error('❌ Errore fatale caricamento dati nella Home:', error);
+    erroreDB = true;
+  }
+
+  // Interfaccia di emergenza in caso di errore DB irrecuperabile
+  if (erroreDB) {
+    return (
+      <div className="min-h-dvh bg-celtic-dark flex flex-col items-center justify-center p-6 text-center">
+        <div className="bg-celtic-forest/80 border-2 border-celtic-red/50 rounded-2xl p-6 max-w-md w-full shadow-2xl animate-fade-in">
+          <AlertTriangle className="w-12 h-12 text-celtic-red mx-auto mb-4 animate-bounce" />
+          <h1 className="font-medieval text-2xl text-celtic-gold mb-2">
+            Impossibile caricare i dati
+          </h1>
+          <p className="text-celtic-parchment/70 text-sm mb-6">
+            Il custode sta riscontrando problemi di connessione con le antiche pergamene (Database Upstash non raggiungibile o in manutenzione).
+          </p>
+          <Link
+            href="/admin"
+            className="inline-flex items-center justify-center gap-2 w-full py-3 bg-celtic-gold/20 hover:bg-celtic-gold/30 text-celtic-gold border border-celtic-gold/40 rounded-xl font-bold transition-all text-sm"
+          >
+            <Shield className="w-4 h-4" />
+            Verifica Accesso Custode
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Calcoli di riepilogo protetti e pre-elaborazione delle quote
+  const riepilogo = calcolaRiepilogo(amici, costi);
   const amiciConQuote = amici.map((amico) => ({
     ...amico,
     quote: calcolaQuoteAmico(amico, costi, amici),
