@@ -16,7 +16,7 @@ interface AmicoDrawerProps {
   partecipaC1: boolean;
   partecipaC2: boolean;
   mangiaFegato: boolean;
-  aiutoFurgoneIniziale?: boolean;
+  aiutoFurgoneDB: boolean;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -29,17 +29,26 @@ export default function AmicoDrawer({
   partecipaC1,
   partecipaC2,
   mangiaFegato,
-  aiutoFurgoneIniziale,
+  aiutoFurgoneDB,
   isOpen,
   onClose,
 }: AmicoDrawerProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [payingWith, setPayingWith] = useState<'revolut' | 'paypal' | null>(null);
-  const [aiutoFurgone, setAiutoFurgone] = useState(aiutoFurgoneIniziale || false);
 
-  // Totale Dinamico per l'Utente (opzione volontaria +10€)
-  const totaleFinale = aiutoFurgone ? quote.totaleAmico + 10 : quote.totaleAmico;
+  // Se l'utente ha GIÀ pagato con furgone (confermato nel DB), il toggle è fisso.
+  // Se NON ha pagato, parte da false: la scelta è volontaria al momento del pagamento.
+  const [aiutoFurgone, setAiutoFurgone] = useState(
+    pagato ? aiutoFurgoneDB : false
+  );
+
+  // ===== SINGLE SOURCE OF TRUTH =====
+  // quote.totaleAmico è la base PURA (cibo/evento, SENZA furgone).
+  // Il totale visualizzato aggiunge +10 SOLO se il toggle locale è attivo.
+  const totaleFinale = aiutoFurgone
+    ? quote.totaleAmico + 10
+    : quote.totaleAmico;
 
   // Deep link URLs con totaleFinale pre-compilato
   const revolutUrl = `https://revolut.me/${process.env.NEXT_PUBLIC_REVOLUT_USERNAME || ''}`;
@@ -49,21 +58,25 @@ export default function AmicoDrawer({
     setMounted(true);
   }, []);
 
-  // 1. Gestione animazione di apertura e reset stato locale alla chiusura
+  // Reset completo dello stato locale quando cambia l'utente visualizzato
+  useEffect(() => {
+    setAiutoFurgone(pagato ? aiutoFurgoneDB : false);
+    setPayingWith(null);
+  }, [id, pagato, aiutoFurgoneDB]);
+
+  // Gestione animazione di apertura
   useEffect(() => {
     if (isOpen && mounted) {
-      setAiutoFurgone(aiutoFurgoneIniziale || false);
       const timer = setTimeout(() => {
         setIsVisible(true);
       }, 15);
       return () => clearTimeout(timer);
     } else {
       setIsVisible(false);
-      setPayingWith(null);
     }
-  }, [isOpen, mounted, aiutoFurgoneIniziale]);
+  }, [isOpen, mounted]);
 
-  // 2. Gestione rigorosa del Body Scroll (Scroll Lock con cleanup garantito)
+  // Gestione rigorosa del Body Scroll (Scroll Lock con cleanup garantito)
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -73,11 +86,11 @@ export default function AmicoDrawer({
     }
   }, [isOpen]);
 
-  // 3. Gestione pagamento con animazione "Heart Burst" condizionale
+  // Gestione pagamento con animazione "Heart Burst" condizionale
   const handlePayment = (url: string, method: 'revolut' | 'paypal') => {
     if (payingWith !== null) return;
 
-    // Registra la scelta (opt-in furgone) nel database
+    // Persiste la scelta furgone nel database PRIMA del redirect
     impostaFurgoneAction(id, aiutoFurgone).catch(console.error);
 
     // SE aiutoFurgone è false: Nessuna animazione, redirect immediato
@@ -86,14 +99,12 @@ export default function AmicoDrawer({
       return;
     }
 
-    // SE aiutoFurgone è true: Attiva l'animazione di ringraziamento e ritarda il redirect
+    // SE aiutoFurgone è true: Attiva l'animazione di ringraziamento
     setPayingWith(method);
 
-    // Configurazione esplosione di cuoricini con canvas-confetti
     const scalar = 2;
     const heart = confetti.shapeFromText({ text: '❤️', scalar });
 
-    // Primo scoppio di cuori
     confetti({
       shapes: [heart],
       scalar,
@@ -102,7 +113,6 @@ export default function AmicoDrawer({
       origin: { y: 0.7 },
     });
 
-    // Secondo scoppio dopo 250ms per un effetto "burst" meraviglioso
     setTimeout(() => {
       confetti({
         shapes: [heart],
@@ -113,7 +123,6 @@ export default function AmicoDrawer({
       });
     }, 250);
 
-    // Reindirizzamento ritardato (1600ms per ammirare l'animazione di ringraziamento)
     setTimeout(() => {
       setPayingWith(null);
       window.open(url, '_blank', 'noopener,noreferrer');
@@ -122,7 +131,6 @@ export default function AmicoDrawer({
 
   if (!isOpen || !mounted) return null;
 
-  // Renderizzazione con React Portal nel document.body
   return createPortal(
     <>
       {/* Overlay / Backdrop fisso */}
@@ -189,7 +197,7 @@ export default function AmicoDrawer({
               </div>
             )}
 
-            {/* Supporto Logistico / Aiuto Furgone (quando la spunta è attiva) */}
+            {/* Riga Furgone nel riepilogo (visibile solo quando la spunta è attiva) */}
             {aiutoFurgone && (
               <div className={styles.quoteBox}>
                 <p className={styles.quoteHeader}>🚐 Supporto Logistico</p>
@@ -200,7 +208,7 @@ export default function AmicoDrawer({
               </div>
             )}
 
-            {/* UI del Toggle Volontario (Opt-in Aiuto Furgone) */}
+            {/* UI del Toggle Volontario — SOLO per chi NON ha ancora pagato */}
             {!pagato && (
               <label className="flex items-center justify-between p-3.5 bg-celtic-forest/80 border border-celtic-gold/40 rounded-xl cursor-pointer hover:bg-celtic-forest transition-all mb-4 shadow-sm group">
                 <span className="text-celtic-parchment text-sm font-medium group-hover:text-celtic-gold transition-colors pr-3">
@@ -218,7 +226,7 @@ export default function AmicoDrawer({
               </label>
             )}
 
-            {/* Totale da pagare (dinamico) */}
+            {/* Totale da pagare (dinamico, SSOT) */}
             <div className={styles.totalBox}>
               <div className={styles.totalRow}>
                 <span className={styles.totalLabel}>Totale da pagare</span>

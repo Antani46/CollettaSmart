@@ -33,9 +33,10 @@ export default function AmicoList({ amiciConQuote }: AmicoListProps) {
         ))}
       </div>
 
-      {/* Drawer dettaglio */}
+      {/* Drawer dettaglio — key forzata per garantire il remount quando cambia utente */}
       {selectedAmico && (
         <AmicoDrawer
+          key={selectedAmico.id}
           id={selectedAmico.id}
           nome={selectedAmico.nome}
           quote={selectedAmico.quote}
@@ -43,7 +44,7 @@ export default function AmicoList({ amiciConQuote }: AmicoListProps) {
           partecipaC1={selectedAmico.partecipaC1}
           partecipaC2={selectedAmico.partecipaC2}
           mangiaFegato={selectedAmico.mangiaFegato}
-          aiutoFurgoneIniziale={selectedAmico.aiutoFurgone || false}
+          aiutoFurgoneDB={selectedAmico.aiutoFurgone || false}
           isOpen={!!selectedAmico}
           onClose={() => setSelectedAmico(null)}
         />
