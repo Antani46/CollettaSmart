@@ -3,7 +3,7 @@
 import { useActionState } from 'react';
 import { loginAction } from '@/app/actions';
 import { Shield, KeyRound, ArrowLeft } from 'lucide-react';
-import Link form 'next/link';
+import Link  from 'next/link';
 
 export default function AdminLogin() {
   const [state, formAction, isPending] = useActionState(loginAction, null);
