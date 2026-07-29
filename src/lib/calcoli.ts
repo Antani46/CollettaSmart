@@ -17,19 +17,38 @@ export function calcolaQuoteAmico(
   const partecipantiFegato = tuttiAmici.filter(a => a.partecipaC1 && a.mangiaFegato).length;
   const partecipantiC2 = tuttiAmici.filter(a => a.partecipaC2).length;
 
-  // Calcola la quota Normali (solo se l'amico partecipa a C1)
+  // --- GESTIONE FALLBACK (I SOLDI NON DEVONO MAI SPARIRE) ---
+  // Se l'admin ha inserito una spesa ma nessuno ha la spunta corrispondente,
+  // i soldi non devono andare persi, altrimenti l'obiettivo non viene raggiunto.
+  let spesaFegatoEffettiva = costi.costoFegato;
+  let spesaNormaliEffettiva = costi.costoNormali;
+  let spesaC2Effettiva = costi.costoC2;
+
+  // 1. Fegato orfano -> ricade sui partecipanti della Colletta 1
+  if (spesaFegatoEffettiva > 0 && partecipantiFegato === 0) {
+    spesaNormaliEffettiva += spesaFegatoEffettiva;
+    spesaFegatoEffettiva = 0;
+  }
+
+  // 2. Colletta 1 orfana -> ricade sulla Colletta Generale (C2)
+  if (spesaNormaliEffettiva > 0 && partecipantiC1 === 0) {
+    spesaC2Effettiva += spesaNormaliEffettiva;
+    spesaNormaliEffettiva = 0;
+  }
+
+  // Calcola la quota Normali (basata sulla spesa effettiva protetta)
   const quotaNormali = amico.partecipaC1 && partecipantiC1 > 0
-    ? costi.costoNormali / partecipantiC1
+    ? spesaNormaliEffettiva / partecipantiC1
     : 0;
 
-  // Calcola la quota Fegato (solo se l'amico partecipa a C1 E mangia fegato)
+  // Calcola la quota Fegato
   const quotaFegato = amico.partecipaC1 && amico.mangiaFegato && partecipantiFegato > 0
-    ? costi.costoFegato / partecipantiFegato
+    ? spesaFegatoEffettiva / partecipantiFegato
     : 0;
 
-  // Calcola la quota C2 (solo se l'amico partecipa a C2)
+  // Calcola la quota C2
   const quotaC2 = amico.partecipaC2 && partecipantiC2 > 0
-    ? costi.costoC2 / partecipantiC2
+    ? spesaC2Effettiva / partecipantiC2
     : 0;
 
   // Calcola la quota Furgone (costo fisso di 10.00€ se aiutoFurgone è attivo)

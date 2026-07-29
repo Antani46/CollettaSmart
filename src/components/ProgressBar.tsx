@@ -25,8 +25,8 @@ export default function ProgressBar({
   totaleAmici,
   donatoriFurgone,
 }: ProgressBarProps) {
-  // Barra principale: usa raccoltoPrincipale (depurato dal furgone)
-  const totalePrincipale = totale - (donatoriFurgone?.length ?? 0) * 10;
+  // Barra principale: usa il totale puro passato dal backend (che ora è solo la somma degli scontrini)
+  const totalePrincipale = totale;
   const percentuale = totalePrincipale > 0
     ? Math.min((raccoltoPrincipale / totalePrincipale) * 100, 100)
     : 0;
