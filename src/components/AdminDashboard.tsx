@@ -20,6 +20,7 @@ import {
   Beef,
   CircleDollarSign,
   ShoppingBag,
+  Check,
 } from 'lucide-react';
 
 interface AdminDashboardProps {
@@ -212,43 +213,25 @@ export default function AdminDashboard({ costi, amici }: AdminDashboardProps) {
                     key={amico.id}
                     className="flex items-center gap-3 p-3 bg-celtic-dark/30 rounded-xl"
                   >
-                    {/* Toggles: Pagato e Furgone */}
-                    <div className="flex flex-col gap-1.5">
-                      <button
-                        onClick={() => startTransition(() => togglePagatoAction(amico.id))}
-                        disabled={isPending}
-                        title="Pagato"
-                        className={`flex-shrink-0 w-11 h-6 rounded-full transition-all relative ${
-                          amico.pagato
-                            ? 'bg-celtic-green'
-                            : 'bg-celtic-dark/60 border border-celtic-moss'
+                    {/* Toggle Pagato (Sinistra) */}
+                    <button
+                      onClick={() => startTransition(() => togglePagatoAction(amico.id))}
+                      disabled={isPending}
+                      title="Pagato"
+                      className={`flex-shrink-0 w-12 h-7 rounded-full transition-all relative ${
+                        amico.pagato
+                          ? 'bg-celtic-green'
+                          : 'bg-celtic-dark/60 border border-celtic-moss'
+                      }`}
+                    >
+                      <span
+                        className={`absolute top-0.5 w-6 h-6 rounded-full bg-white shadow transition-all ${
+                          amico.pagato ? 'left-[22px]' : 'left-0.5'
                         }`}
-                      >
-                        <span
-                          className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all ${
-                            amico.pagato ? 'left-[22px]' : 'left-0.5'
-                          }`}
-                        />
-                      </button>
-                      <button
-                        onClick={() => startTransition(() => impostaFurgoneAction(amico.id, !amico.aiutoFurgone))}
-                        disabled={isPending}
-                        title="Quota Furgone Confermata"
-                        className={`flex-shrink-0 w-11 h-6 rounded-full transition-all relative ${
-                          amico.aiutoFurgone
-                            ? 'bg-blue-500'
-                            : 'bg-celtic-dark/60 border border-celtic-moss'
-                        }`}
-                      >
-                        <span
-                          className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all ${
-                            amico.aiutoFurgone ? 'left-[22px]' : 'left-0.5'
-                          }`}
-                        />
-                      </button>
-                    </div>
+                      />
+                    </button>
 
-                    {/* Info */}
+                    {/* Info (Centro) */}
                     <div className="flex-1 min-w-0">
                       <p className="text-celtic-parchment font-medium truncate">
                         {amico.nome}
@@ -260,6 +243,26 @@ export default function AdminDashboard({ costi, amici }: AdminDashboardProps) {
                         <span className="text-celtic-gold font-bold">€{quote.totaleAmico.toFixed(2)}</span>
                       </div>
                     </div>
+
+                    {/* Checkbox Furgone (Destra) */}
+                    <button
+                      onClick={() => startTransition(() => impostaFurgoneAction(amico.id, !amico.aiutoFurgone))}
+                      disabled={isPending}
+                      title="Quota Furgone Confermata"
+                      className={`flex-shrink-0 flex items-center gap-1.5 px-2 py-1.5 rounded-lg border transition-all cursor-pointer ${
+                        amico.aiutoFurgone
+                          ? 'bg-blue-500/20 border-blue-500/50 text-blue-400 hover:bg-blue-500/30'
+                          : 'bg-celtic-dark/60 border-celtic-moss/50 text-celtic-parchment/40 hover:bg-celtic-dark hover:border-celtic-moss'
+                      }`}
+                    >
+                      <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
+                        amico.aiutoFurgone ? 'bg-blue-500 border-blue-500 text-white' : 'border-celtic-moss/80'
+                      }`}>
+                        {amico.aiutoFurgone && <Check className="w-3 h-3" strokeWidth={3} />}
+                      </div>
+                      <span className="text-xs font-medium hidden sm:inline">Furgone</span>
+                      <span className="text-sm sm:hidden">🚐</span>
+                    </button>
 
                     {/* Rimuovi */}
                     <button
