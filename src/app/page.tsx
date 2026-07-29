@@ -63,13 +63,9 @@ export default async function HomePage() {
     );
   }
 
-  // Calcoli di riepilogo protetti e pre-elaborazione delle quote
+  // Calcoli di riepilogo protetti
   const riepilogo = calcolaRiepilogo(amici, costi);
   const donatoriFurgone = amici.filter(u => u.pagato === true && u.aiutoFurgone === true);
-  const amiciConQuote = amici.map((amico) => ({
-    ...amico,
-    quote: calcolaQuoteAmico(amico, costi, amici),
-  }));
 
   return (
     <div className="page-container">
@@ -140,7 +136,7 @@ export default async function HomePage() {
                 </p>
               </div>
             ) : (
-              <AmicoList amiciConQuote={amiciConQuote} />
+              <AmicoList amici={amici} costi={costi} />
             )}
           </div>
 

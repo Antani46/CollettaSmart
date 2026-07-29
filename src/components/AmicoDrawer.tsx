@@ -4,31 +4,22 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { X, CreditCard, Banknote } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { QuoteCalcolate } from '@/lib/types';
+import { Amico, CostiCollette } from '@/lib/types';
+import { calcolaQuoteAmico } from '@/lib/calcoli';
 import styles from './AmicoDrawer.module.css';
 
 interface AmicoDrawerProps {
-  id: string;
-  nome: string;
-  quote: QuoteCalcolate;
-  pagato: boolean;
-  partecipaC1: boolean;
-  partecipaC2: boolean;
-  mangiaFegato: boolean;
-  aiutoFurgoneDB: boolean;
+  amico: Amico;
+  costi: CostiCollette;
+  tuttiAmici: Amico[];
   isOpen: boolean;
   onClose: () => void;
 }
 
 export default function AmicoDrawer({
-  id,
-  nome,
-  quote,
-  pagato,
-  partecipaC1,
-  partecipaC2,
-  mangiaFegato,
-  aiutoFurgoneDB,
+  amico,
+  costi,
+  tuttiAmici,
   isOpen,
   onClose,
 }: AmicoDrawerProps) {
@@ -36,10 +27,13 @@ export default function AmicoDrawer({
   const [mounted, setMounted] = useState(false);
   const [payingWith, setPayingWith] = useState<'revolut' | 'paypal' | null>(null);
 
+  // Calcolo in tempo reale della quota
+  const quote = calcolaQuoteAmico(amico, costi, tuttiAmici);
+
   // Se l'utente ha GIÀ pagato con furgone (confermato nel DB), il toggle è fisso.
   // Se NON ha pagato, parte da false: la scelta è volontaria al momento del pagamento.
   const [aiutoFurgone, setAiutoFurgone] = useState(
-    pagato ? aiutoFurgoneDB : false
+    amico.pagato ? (amico.aiutoFurgone || false) : false
   );
 
   // ===== SINGLE SOURCE OF TRUTH =====
@@ -59,9 +53,9 @@ export default function AmicoDrawer({
 
   // Reset completo dello stato locale quando cambia l'utente visualizzato
   useEffect(() => {
-    setAiutoFurgone(pagato ? aiutoFurgoneDB : false);
+    setAiutoFurgone(amico.pagato ? (amico.aiutoFurgone || false) : false);
     setPayingWith(null);
-  }, [id, pagato, aiutoFurgoneDB]);
+  }, [amico.id, amico.pagato, amico.aiutoFurgone]);
 
   // Gestione animazione di apertura
   useEffect(() => {
@@ -153,13 +147,13 @@ export default function AmicoDrawer({
           {/* Header */}
           <div className={styles.header}>
             <div>
-              <h2 className={styles.title}>{nome}</h2>
+              <h2 className={styles.title}>{amico.nome}</h2>
               <span
                 className={`${styles.badge} ${
-                  pagato ? styles.badgePaid : styles.badgeUnpaid
+                  amico.pagato ? styles.badgePaid : styles.badgeUnpaid
                 }`}
               >
-                {pagato ? '✓ Pagato' : '✗ Non pagato'}
+                {amico.pagato ? '✓ Pagato' : '✗ Non pagato'}
               </span>
             </div>
             <button onClick={onClose} className={styles.closeButton} aria-label="Chiudi modale">
@@ -171,14 +165,14 @@ export default function AmicoDrawer({
           <div>
             <h3 className={styles.sectionTitle}>Dettaglio Quote</h3>
 
-            {partecipaC1 && (
+            {amico.partecipaC1 && (
               <div className={styles.quoteBox}>
                 <p className={styles.quoteHeader}>🍖 Colletta Martedì</p>
                 <div className={styles.quoteRow}>
                   <span className={styles.quoteLabel}>Quota Normali</span>
                   <span className={styles.quoteValue}>€{quote.quotaNormali.toFixed(2)}</span>
                 </div>
-                {mangiaFegato && (
+                {amico.mangiaFegato && (
                   <div className={styles.quoteRowBorder}>
                     <span className={styles.quoteLabel}>Quota Fegato</span>
                     <span className={styles.quoteValue}>€{quote.quotaFegato.toFixed(2)}</span>
@@ -187,7 +181,7 @@ export default function AmicoDrawer({
               </div>
             )}
 
-            {partecipaC2 && (
+            {amico.partecipaC2 && (
               <div className={styles.quoteBox}>
                 <p className={styles.quoteHeader}>🛍️ Colletta Venerdì</p>
                 <div className={styles.quoteRow}>
@@ -209,7 +203,7 @@ export default function AmicoDrawer({
             )}
 
             {/* UI del Toggle Volontario — SOLO per chi NON ha ancora pagato */}
-            {!pagato && (
+            {!amico.pagato && (
               <label className="flex items-center justify-between p-3.5 bg-celtic-forest/80 border border-celtic-gold/40 rounded-xl cursor-pointer hover:bg-celtic-forest transition-all mb-4 shadow-sm group">
                 <span className="text-celtic-parchment text-sm font-medium group-hover:text-celtic-gold transition-colors pr-3">
                   Vuoi contribuire con 10€ per il noleggio del furgone? 🚐
@@ -236,7 +230,7 @@ export default function AmicoDrawer({
           </div>
 
           {/* Pulsanti Pagamento */}
-          {!pagato && totaleFinale > 0 && (
+          {!amico.pagato && totaleFinale > 0 && (
             <div className={styles.buttonsContainer}>
               <h3 className={styles.sectionTitle}>Paga con</h3>
 
