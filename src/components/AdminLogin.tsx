@@ -2,7 +2,8 @@
 
 import { useActionState } from 'react';
 import { loginAction } from '@/app/actions';
-import { Shield, KeyRound } from 'lucide-react';
+import { Shield, KeyRound, ArrowLeft } from 'lucide-react';
+import Link form 'next/link';
 
 export default function AdminLogin() {
   const [state, formAction, isPending] = useActionState(loginAction, null);
@@ -52,11 +53,19 @@ export default function AdminLogin() {
                 Verifico...
               </span>
             ) : (
-              'Entra nel Cerchio'
+              'Entra'
             )}
           </button>
         </form>
-
+        <div className="mt-8 text-center">
+                  <Link
+                    href="/"
+                    className="inline-flex items-center gap-2 text-celtic-parchment/60 hover:text-celtic-gold transition-colors text-sm font-medium"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    Indietro
+                  </Link>
+                </div>
       </div>
     </div>
   );

@@ -56,11 +56,11 @@ export default function AdminDashboard({ costi, amici }: AdminDashboardProps) {
           </div>
 
           <form action={costiAction} className="space-y-3">
-            {/* Arrosticini Normali */}
+            {/* Arrosticini Normali - Martedì */}
             <div>
               <label className="flex items-center gap-2 text-sm text-celtic-parchment/70 mb-1">
                 <Beef className="w-4 h-4" />
-                Arrosticini Normali (C1)
+                Arrosticini Normali - Martedì (C1)
               </label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-celtic-gold/50 font-bold">€</span>
@@ -80,7 +80,7 @@ export default function AdminDashboard({ costi, amici }: AdminDashboardProps) {
             <div>
               <label className="flex items-center gap-2 text-sm text-celtic-parchment/70 mb-1">
                 <Beef className="w-4 h-4 text-celtic-red" />
-                Arrosticini Fegato (C1)
+                Arrosticini Fegato - Martedì (C1)
               </label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-celtic-gold/50 font-bold">€</span>

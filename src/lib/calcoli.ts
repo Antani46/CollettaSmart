@@ -7,18 +7,6 @@
 
 import { Amico, CostiCollette, QuoteCalcolate, RiepilogoColletta } from './types';
 
-/**
- * Calcola le quote per un singolo amico.
- * 
- * LOGICA COLLETTA 1 (Arrosticini):
- * - Quota Normali = Costo Totale Normali / N° partecipanti C1
- * - Quota Fegato  = Costo Totale Fegato / N° partecipanti con mangiaFegato
- * - Chi mangia fegato paga entrambe le quote
- * - Chi NON mangia fegato paga solo la quota Normali
- * 
- * LOGICA COLLETTA 2 (Generale):
- * - Quota C2 = Costo Totale C2 / N° partecipanti C2
- */
 export function calcolaQuoteAmico(
   amico: Amico,
   costi: CostiCollette,
