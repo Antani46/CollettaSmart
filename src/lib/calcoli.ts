@@ -59,13 +59,17 @@ export function calcolaRiepilogo(
   let raccolto = 0;
   let raccoltoPrincipale = 0;
   let raccoltoFurgone = 0;
-  let totale = 0;
   let pagati = 0;
+
+  // Fix Architetturale: Il target (totale) deve essere la spesa reale (scontrini),
+  // NON la somma delle quote individuali. Questo previene errori di arrotondamento
+  // e fluttuazioni o "soldi persi" se ci sono spese senza partecipanti.
+  const totale = costi.costoNormali + costi.costoFegato + costi.costoC2;
 
   for (const amico of amici) {
     const quote = calcolaQuoteAmico(amico, costi, amici);
-    // totaleAmico è il totale BASE (cibo/evento, senza furgone)
-    totale += quote.totaleAmico;
+    
+    // Il calcolo del raccolto usa le quote individuali perché l'utente paga la sua quota
     if (amico.pagato) {
       raccolto += quote.totaleAmico;
       raccoltoPrincipale += quote.totaleAmico;
