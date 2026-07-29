@@ -90,8 +90,9 @@ export default function AmicoDrawer({
     if (payingWith !== null) return;
 
     // SE aiutoFurgone è false: Nessuna animazione, redirect immediato
+    // Su Mobile Safari, window.location.href è molto più sicuro per i gateway di pagamento
     if (!aiutoFurgone) {
-      window.open(url, '_blank', 'noopener,noreferrer');
+      window.location.href = url;
       return;
     }
 
@@ -121,7 +122,10 @@ export default function AmicoDrawer({
 
     setTimeout(() => {
       setPayingWith(null);
-      window.open(url, '_blank', 'noopener,noreferrer');
+      // Su Safari, i pop-up scatenati dentro un setTimeout vengono brutalmente bloccati.
+      // Il cambio di location (window.location.href) è invece sempre permesso ed
+      // è perfetto per scatenare i deep link (es. app Revolut/PayPal).
+      window.location.href = url;
     }, 1600);
   };
 
