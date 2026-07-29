@@ -5,7 +5,6 @@ import { createPortal } from 'react-dom';
 import { X, CreditCard, Banknote } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { QuoteCalcolate } from '@/lib/types';
-import { impostaFurgoneAction } from '@/app/actions';
 import styles from './AmicoDrawer.module.css';
 
 interface AmicoDrawerProps {
@@ -89,9 +88,6 @@ export default function AmicoDrawer({
   // Gestione pagamento con animazione "Heart Burst" condizionale
   const handlePayment = (url: string, method: 'revolut' | 'paypal') => {
     if (payingWith !== null) return;
-
-    // Persiste la scelta furgone nel database PRIMA del redirect
-    impostaFurgoneAction(id, aiutoFurgone).catch(console.error);
 
     // SE aiutoFurgone è false: Nessuna animazione, redirect immediato
     if (!aiutoFurgone) {

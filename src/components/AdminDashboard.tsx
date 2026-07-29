@@ -6,6 +6,7 @@ import {
   aggiungiAmicoAction,
   rimuoviAmicoAction,
   togglePagatoAction,
+  impostaFurgoneAction,
   logoutAction,
 } from '@/app/actions';
 import { calcolaQuoteAmico } from '@/lib/calcoli';
@@ -211,22 +212,41 @@ export default function AdminDashboard({ costi, amici }: AdminDashboardProps) {
                     key={amico.id}
                     className="flex items-center gap-3 p-3 bg-celtic-dark/30 rounded-xl"
                   >
-                    {/* Toggle Pagato */}
-                    <button
-                      onClick={() => startTransition(() => togglePagatoAction(amico.id))}
-                      disabled={isPending}
-                      className={`flex-shrink-0 w-12 h-7 rounded-full transition-all relative ${
-                        amico.pagato
-                          ? 'bg-celtic-green'
-                          : 'bg-celtic-dark/60 border border-celtic-moss'
-                      }`}
-                    >
-                      <span
-                        className={`absolute top-0.5 w-6 h-6 rounded-full bg-white shadow transition-all ${
-                          amico.pagato ? 'left-[22px]' : 'left-0.5'
+                    {/* Toggles: Pagato e Furgone */}
+                    <div className="flex flex-col gap-1.5">
+                      <button
+                        onClick={() => startTransition(() => togglePagatoAction(amico.id))}
+                        disabled={isPending}
+                        title="Pagato"
+                        className={`flex-shrink-0 w-11 h-6 rounded-full transition-all relative ${
+                          amico.pagato
+                            ? 'bg-celtic-green'
+                            : 'bg-celtic-dark/60 border border-celtic-moss'
                         }`}
-                      />
-                    </button>
+                      >
+                        <span
+                          className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all ${
+                            amico.pagato ? 'left-[22px]' : 'left-0.5'
+                          }`}
+                        />
+                      </button>
+                      <button
+                        onClick={() => startTransition(() => impostaFurgoneAction(amico.id, !amico.aiutoFurgone))}
+                        disabled={isPending}
+                        title="Quota Furgone Confermata"
+                        className={`flex-shrink-0 w-11 h-6 rounded-full transition-all relative ${
+                          amico.aiutoFurgone
+                            ? 'bg-blue-500'
+                            : 'bg-celtic-dark/60 border border-celtic-moss'
+                        }`}
+                      >
+                        <span
+                          className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all ${
+                            amico.aiutoFurgone ? 'left-[22px]' : 'left-0.5'
+                          }`}
+                        />
+                      </button>
+                    </div>
 
                     {/* Info */}
                     <div className="flex-1 min-w-0">

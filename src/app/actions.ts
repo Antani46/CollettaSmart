@@ -125,6 +125,7 @@ export async function togglePagatoAction(id: string): Promise<void> {
 }
 
 export async function impostaFurgoneAction(id: string, attivo: boolean): Promise<void> {
+  await requireAdmin();
   await kvImpostaFurgone(id, attivo);
   revalidatePath('/');
   revalidatePath('/admin');
