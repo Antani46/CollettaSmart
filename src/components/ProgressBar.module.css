@@ -162,3 +162,65 @@
     transform: translateY(-3px) rotate(12deg);
   }
 }
+
+/* ====================================================
+ * Barra Progressione Furgone — Fondo Separato
+ * ==================================================== */
+.furgoneBar {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.875rem 1rem;
+  background-color: rgba(10, 15, 10, 0.5);
+  border: 1px solid rgba(100, 160, 200, 0.25);
+  border-radius: 0.875rem;
+}
+
+.furgoneHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+}
+
+.furgoneLabel {
+  color: rgba(147, 210, 240, 0.85);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.furgoneCountText {
+  color: rgba(147, 210, 240, 0.6);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.furgoneTrack {
+  position: relative;
+  height: 0.6rem;
+  background-color: rgba(10, 15, 10, 0.7);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.furguneFill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 9999px;
+  width: 0%;
+  transition: width 1s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+  background: linear-gradient(90deg, #2980b9, #56ccf2, #a3e4d7);
+}
+
+.furguneFillActive {
+  box-shadow: 0 0 10px rgba(86, 204, 242, 0.45);
+}
+
+.furgonePercentage {
+  text-align: right;
+  color: rgba(147, 210, 240, 0.4);
+  font-size: 0.7rem;
+  margin-top: 0.25rem;
+}

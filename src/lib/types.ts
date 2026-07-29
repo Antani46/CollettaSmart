@@ -54,6 +54,10 @@ export interface RiepilogoColletta {
   raccolto: number;
   /** Totale da raccogliere (somma totali di tutti gli amici) */
   totale: number;
+  /** Quota principale raccolta (depurata dalla parte furgone) */
+  raccoltoPrincipale: number;
+  /** Quota furgone raccolta (solo dai paganti con aiutoFurgone === true) */
+  raccoltoFurgone: number;
   /** Numero di amici che hanno pagato */
   pagati: number;
   /** Numero totale di amici */

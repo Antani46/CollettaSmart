@@ -105,11 +105,13 @@ export default async function HomePage() {
 
         {/* ===== CONTENUTO PRINCIPALE ===== */}
         <main className="w-full space-y-6">
-          {/* Progress Bar con Hall of Fame */}
+          {/* Progress Bar con Hall of Fame e barra furgone separata */}
           <div className="w-full animate-fade-in delay-150">
             <ProgressBar
               raccolto={riepilogo.raccolto}
               totale={riepilogo.totale}
+              raccoltoPrincipale={riepilogo.raccoltoPrincipale}
+              raccoltoFurgone={riepilogo.raccoltoFurgone}
               pagati={riepilogo.pagati}
               totaleAmici={riepilogo.totaleAmici}
               donatoriFurgone={donatoriFurgone.map(u => u.nome)}

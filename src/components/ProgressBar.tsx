@@ -7,14 +7,35 @@ import styles from './ProgressBar.module.css';
 interface ProgressBarProps {
   raccolto: number;
   totale: number;
+  raccoltoPrincipale: number;
+  raccoltoFurgone: number;
   pagati: number;
   totaleAmici: number;
   donatoriFurgone?: string[];
 }
 
-export default function ProgressBar({ raccolto, totale, pagati, totaleAmici, donatoriFurgone }: ProgressBarProps) {
-  const percentuale = totale > 0 ? Math.min((raccolto / totale) * 100, 100) : 0;
+const TARGET_FURGONE = 200;
+
+export default function ProgressBar({
+  raccolto,
+  totale,
+  raccoltoPrincipale,
+  raccoltoFurgone,
+  pagati,
+  totaleAmici,
+  donatoriFurgone,
+}: ProgressBarProps) {
+  // Barra principale: usa raccoltoPrincipale (depurato dal furgone)
+  const totalePrincipale = totale - (donatoriFurgone?.length ?? 0) * 10;
+  const percentuale = totalePrincipale > 0
+    ? Math.min((raccoltoPrincipale / totalePrincipale) * 100, 100)
+    : 0;
+
+  // Barra furgone: target fisso €200
+  const percentualeFurgone = Math.min((raccoltoFurgone / TARGET_FURGONE) * 100, 100);
+
   const fillRef = useRef<HTMLDivElement>(null);
+  const fillFurgoneRef = useRef<HTMLDivElement>(null);
 
   // Aggiornamento DOM chirurgico per la larghezza senza sporcare il markup JSX con style={...}
   useEffect(() => {
@@ -23,9 +44,15 @@ export default function ProgressBar({ raccolto, totale, pagati, totaleAmici, don
     }
   }, [percentuale]);
 
+  useEffect(() => {
+    if (fillFurgoneRef.current) {
+      fillFurgoneRef.current.style.width = `${percentualeFurgone}%`;
+    }
+  }, [percentualeFurgone]);
+
   return (
     <div className={styles.progressCard}>
-      {/* Titolo raccolta */}
+      {/* ===== BARRA PRINCIPALE (cibo/evento) ===== */}
       <div className={styles.headerRow}>
         <div className={styles.titleGroup}>
           <CircleDollarSign className={styles.icon} />
@@ -36,17 +63,17 @@ export default function ProgressBar({ raccolto, totale, pagati, totaleAmici, don
         </span>
       </div>
 
-      {/* Importi */}
+      {/* Importi principali (escluso furgone) */}
       <div className={styles.amountsRow}>
         <span className={styles.currentAmount}>
-          €{raccolto.toFixed(2)}
+          €{raccoltoPrincipale.toFixed(2)}
         </span>
         <span className={styles.totalAmount}>
-          / €{totale.toFixed(2)}
+          / €{totalePrincipale > 0 ? totalePrincipale.toFixed(2) : totale.toFixed(2)}
         </span>
       </div>
 
-      {/* Barra progresso totalmente priva di stili inline nel JSX */}
+      {/* Barra progresso principale — priva di stili inline nel JSX */}
       <div className={styles.track}>
         <div
           ref={fillRef}
@@ -54,7 +81,7 @@ export default function ProgressBar({ raccolto, totale, pagati, totaleAmici, don
         />
       </div>
 
-      {/* Percentuale */}
+      {/* Percentuale principale */}
       <p className={styles.percentageText}>
         {percentuale.toFixed(0)}%
       </p>
@@ -72,6 +99,27 @@ export default function ProgressBar({ raccolto, totale, pagati, totaleAmici, don
                 {nome}
               </span>
             ))}
+          </div>
+
+          {/* ===== BARRA FURGONE ===== */}
+          <div className={styles.furgoneBar}>
+            <div className={styles.furgoneHeaderRow}>
+              <span className={styles.furgoneLabel}>🚐 Obiettivo Noleggio Furgone</span>
+              <span className={styles.furgoneCountText}>
+                €{raccoltoFurgone.toFixed(2)} / €{TARGET_FURGONE}
+              </span>
+            </div>
+
+            <div className={styles.furgoneTrack}>
+              <div
+                ref={fillFurgoneRef}
+                className={`${styles.furguneFill} ${percentualeFurgone > 0 ? styles.furguneFillActive : ''}`}
+              />
+            </div>
+
+            <p className={styles.furgonePercentage}>
+              {percentualeFurgone.toFixed(0)}%
+            </p>
           </div>
         </div>
       )}

@@ -56,6 +56,8 @@ export function calcolaRiepilogo(
   costi: CostiCollette
 ): RiepilogoColletta {
   let raccolto = 0;
+  let raccoltoPrincipale = 0;
+  let raccoltoFurgone = 0;
   let totale = 0;
   let pagati = 0;
 
@@ -65,12 +67,17 @@ export function calcolaRiepilogo(
     if (amico.pagato) {
       raccolto += quote.totaleAmico;
       pagati++;
+      // Separa la quota furgone (€10 fissi) da quella principale
+      raccoltoFurgone += quote.quotaFurgone;
+      raccoltoPrincipale += quote.totaleAmico - quote.quotaFurgone;
     }
   }
 
   return {
     raccolto: arrotonda(raccolto),
     totale: arrotonda(totale),
+    raccoltoPrincipale: arrotonda(raccoltoPrincipale),
+    raccoltoFurgone: arrotonda(raccoltoFurgone),
     pagati,
     totaleAmici: amici.length,
   };
