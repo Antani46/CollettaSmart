@@ -14,7 +14,7 @@ interface ProgressBarProps {
   donatoriFurgone?: string[];
 }
 
-const TARGET_FURGONE = 200;
+const TARGET_FURGONE = 240;
 
 export default function ProgressBar({
   raccolto,

@@ -14,11 +14,17 @@ interface AmicoListProps {
 export default function AmicoList({ amici, costi }: AmicoListProps) {
   const [selectedAmico, setSelectedAmico] = useState<Amico | null>(null);
 
+  // Ordinamento: non pagati in cima, poi pagati. Dentro ogni gruppo, A→Z.
+  const amiciOrdinati = [...amici].sort((a, b) => {
+    if (a.pagato !== b.pagato) return a.pagato ? 1 : -1;
+    return a.nome.localeCompare(b.nome);
+  });
+
   return (
     <>
       {/* Lista card semantica e organizzata */}
       <div className={styles.listContainer}>
-        {amici.map((amico) => (
+        {amiciOrdinati.map((amico) => (
           <div key={amico.id} className={styles.staggerItem}>
             <AmicoCard
               amico={amico}
